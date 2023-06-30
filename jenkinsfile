@@ -1,0 +1,25 @@
+node('built-in') 
+{
+    stage('contDownload') 
+    {
+        git 'https://github.com/aiella-p/mavenproject.git'
+    }    
+    stage('contBuild') 
+    {
+        sh 'mvn package'
+    }    
+    stage('contDeployment') 
+    {
+        deploy adapters: [tomcat9(credentialsId: '9cf5b87b-661a-4374-a55d-6b1367c8e1fb', path: '', url: 'http://172.31.31.38:8080')], contextPath: 'testapp', war: '**/*.war'
+    }    
+     stage('contTesting') 
+    {
+        git credentialsId: '9cf5b87b-661a-4374-a55d-6b1367c8e1fb', url: 'https://github.com/aiella-p/Fun-Testing.git'
+        sh 'java -jar /var/lib/jenkins/workspace/ScriptedPipeline1/testing.jar'
+    }   
+    stage('contDeploy') 
+    {
+        deploy adapters: [tomcat9(credentialsId: '9cf5b87b-661a-4374-a55d-6b1367c8e1fb', path: '', url: 'http://172.31.10.64:8080')], contextPath: 'prodapp', war: '**/*.war'
+    }    
+ }
+
